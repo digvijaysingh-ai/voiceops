@@ -1,10 +1,17 @@
 [project]
 name = "voiceledger"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Hash-chained, signed event ledger with pluggable rules and a standalone verifier."
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Digvijay Singh" }]
 requires-python = ">=3.12"
 dependencies = ["cryptography>=42"]
+
+[project.urls]
+Repository = "https://github.com/digvijaysingh-ai/voiceops"
+Documentation = "https://github.com/digvijaysingh-ai/voiceops/blob/main/docs/guide.md"
 
 [project.optional-dependencies]
 postgres = ["psycopg[binary]>=3.2"]

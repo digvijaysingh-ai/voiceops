@@ -41,3 +41,7 @@ uv run ruff check . && uv run ruff format --check . && uv run pytest -q
 ```
 
 Postgres tests use `TEST_DATABASE_URL`, or an embedded server via `pgserver`.
+
+## Licence
+
+MIT. See [`LICENSE`](LICENSE).

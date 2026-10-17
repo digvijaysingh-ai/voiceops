@@ -10,4 +10,4 @@ uv run voiceops gate
 
 Commands: `init`, `build [--check]`, `push`, `gate`, `check`, `call`, `fetch`, `review`. Extras: `voiceops[fastapi]` (guard dependencies), `voiceops[postgres]` (token store, ledger storage).
 
-Guide: `docs/guide.md` in the repository.
+Guide: [https://github.com/digvijaysingh-ai/voiceops/blob/main/docs/guide.md](https://github.com/digvijaysingh-ai/voiceops/blob/main/docs/guide.md). MIT licence.

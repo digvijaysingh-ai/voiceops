@@ -23,4 +23,4 @@ A bundle is a zip with `ledger.jsonl`, `list_snapshots.jsonl` and `head.json`. R
 
 What it proves: the record wasn't changed after the head was signed, and the declared rules hold over it. What it doesn't: that the events were true. Reconcile against the system of record for that.
 
-Part of voiceops; rules reference in its `docs/guide.md`.
+Part of [voiceops](https://github.com/digvijaysingh-ai/voiceops); rules reference in its [guide](https://github.com/digvijaysingh-ai/voiceops/blob/main/docs/guide.md). MIT licence.
