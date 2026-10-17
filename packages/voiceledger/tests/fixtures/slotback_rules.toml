@@ -1,0 +1,28 @@
+# Slotback's two domain checks, expressed as generic rules.
+# Each freed slot snapshots its waiting list; agents call down it in order.
+
+# No appointment detail on a call before that call's identity check passed.
+[[ledger.rules]]
+rule = "requires_before"
+name = "identity_before_detail"
+effect = "detail_disclosed"
+precondition = "identity_verified"
+scope = ["call_id", "pid"]
+
+# Every freed slot is offered rank 1, 2, 3... in the snapshotted list order.
+[[ledger.rules]]
+rule = "follows_snapshot_order"
+name = "list_order"
+snapshot = "list_snapshot"
+group_by = "slot_id"
+subject_field = "pid"
+ranked = [
+  "call_attempt", "identity_verified", "identity_failed", "offer_started",
+  "offer_accepted", "offer_declined", "offer_expired", "rank_skipped", "slot_filled",
+]
+advance_on = [
+  "identity_failed", "offer_declined", "offer_expired", "rank_skipped",
+  { type = "call_attempt", where = { outcome = ["no_answer", "voicemail", "busy", "wrong_number"] } },
+]
+claim = "offer_accepted"
+fill = "slot_filled"

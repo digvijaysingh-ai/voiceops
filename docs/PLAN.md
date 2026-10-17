@@ -2,7 +2,7 @@
 
 **One line:** the deployment discipline from Slotback, packaged so the next voice-agent deployment starts with a release gate, an audit ledger and safe defaults on day one, instead of rebuilding them.
 
-**Status:** structure and plan. No code yet.
+**Status:** day 2 done: `voiceledger` ported with pluggable rules. Kit modules not started.
 
 ---
 
@@ -83,11 +83,12 @@ llm       = "…"
 [guard]
 token_header = "X-Call-Token"
 
-[ledger]
-rules = [
-  { rule = "requires_before", effect = "detail_disclosed", precondition = "identity_verified", scope = "call_id" },
-  { rule = "follows_snapshot_order", event = "offer_started", rank_field = "rank", snapshot = "list_snapshot" },
-]
+[[ledger.rules]]                          # full Slotback config: packages/voiceledger/tests/fixtures/slotback_rules.toml
+rule = "requires_before"
+name = "identity_before_detail"
+effect = "detail_disclosed"
+precondition = "identity_verified"
+scope = ["call_id", "pid"]
 
 [evals]
 scenarios = "evals/scenarios.py"
@@ -109,11 +110,11 @@ allowlist = "env:DEMO_PHONE_ALLOWLIST"
 | `chain` (always on) | chain intact | — |
 | `signed_head` (always on) | head signed with the trusted key | — |
 | `requires_before(effect, precondition, scope)` | no appointment detail before identity verified, per call | no balance disclosed before identity check (energy); no claim reference before policy verified (insurance) |
-| `follows_snapshot_order(event, rank_field, snapshot)` | offers follow the waiting-list order | any "offer in the customer's order" process |
+| `follows_snapshot_order(snapshot, group_by, subject_field, ranked, advance_on, claim, fill)` | offers follow the waiting-list order | any "offer in the customer's order" process |
 | `always_followed_by(trigger, response, within, scope)` | — | vulnerability flagged → handoff (energy); emergency phrase → transfer (insurance) |
-| `never(event, when)` | — | no payout decision event ever emitted by the agent |
+| `never(event, where)` | — | no payout decision event ever emitted by the agent |
 
-A rule is a small class with `name`, config, and `check(events, snapshots) -> RuleResult`. Projects can add their own without forking.
+A rule is a small class with `name`, config, and `check(events, snapshots) -> Check`. Events are picked by a matcher: a type, or `{ type, where = { field = value | [values] } }`. Projects add their own rules with `@register_rule("kind")`, without forking. `voiceledger verify --rules <file>` reads `[ledger] rules` straight from `voiceops.toml`.
 
 ### 4.3 The gate
 

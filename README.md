@@ -4,7 +4,7 @@
 
 Extracted from [Slotback](https://github.com/digvijaysingh-ai/slotback), a full deployment of an ElevenLabs agent for a (fictional) public hospital.
 
-> **Status: planning.** The plan, scope and success criteria are in [`docs/PLAN.md`](docs/PLAN.md); decisions in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+> **Status: early build.** `voiceledger` (ledger, signing, bundles, pluggable rules, verifier CLI) is ported; the kit modules are next. The plan, scope and success criteria are in [`docs/PLAN.md`](docs/PLAN.md); decisions in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ## What's in it (planned)
 
