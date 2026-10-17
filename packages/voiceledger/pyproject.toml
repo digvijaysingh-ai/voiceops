@@ -1,0 +1,16 @@
+[project]
+name = "voiceledger"
+version = "0.1.0.dev0"
+description = "Hash-chained, signed event ledger with pluggable rules and a standalone verifier."
+requires-python = ">=3.12"
+dependencies = ["cryptography>=42"]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.2"]
+
+[project.scripts]
+voiceledger = "voiceledger.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

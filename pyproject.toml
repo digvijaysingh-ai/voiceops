@@ -1,0 +1,31 @@
+[project]
+name = "voiceops-workspace"
+version = "0.0.0"
+requires-python = ">=3.12"
+dependencies = ["voiceops", "voiceledger"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+voiceops = { workspace = true }
+voiceledger = { workspace = true }
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6", "hypothesis>=6"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages/voiceledger/tests", "packages/voiceops/tests"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["voiceops", "voiceledger"]
