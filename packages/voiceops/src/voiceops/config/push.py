@@ -104,14 +104,20 @@ def push(
                 )
                 state["secret_id"] = r.json()["secret_id"]
             save()
-        remote: dict[str, list[str]] = {}  # name -> ids of tools already in the workspace
+        # Tools already in the workspace, by the endpoint they call. Only a tool calling this
+        # deployment's own endpoint is ours (left by an earlier, interrupted run): other
+        # projects in the same workspace may use the same tool names, and are never touched.
+        remote: dict[str, list[str]] = {}
         for t in _ok(c.get("/v1/convai/tools")).json().get("tools", []):
-            remote.setdefault(t["tool_config"]["name"], []).append(t["id"])
+            url = (t["tool_config"].get("api_schema") or {}).get("url")
+            if url:
+                remote.setdefault(url, []).append(t["id"])
         tool_ids = {}
         for tool in fill(tools, base_url, state["secret_id"]):
             name = tool["name"]
-            known = state["tools"].get(name) or (remote.get(name) or [None])[0]
-            for dup in [i for i in remote.get(name, []) if i != known]:
+            ours = remote.get(tool["api_schema"]["url"], [])
+            known = state["tools"].get(name) or (ours or [None])[0]
+            for dup in [i for i in ours if i != known]:
                 _ok(c.delete(f"/v1/convai/tools/{dup}"))  # duplicates from failed runs
             if known:
                 _ok(c.patch(f"/v1/convai/tools/{known}", json={"tool_config": tool}))

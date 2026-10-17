@@ -8,6 +8,7 @@ import httpx
 import pytest
 
 from voiceops.config import ConfigError, PushError, build, dry_run, load_config, push, write
+from voiceops.config.push import fill
 
 BASE = "https://api.northwind.example"
 
@@ -102,7 +103,7 @@ def test_pushed_payloads_are_filled(cfg):
 def test_duplicate_tools_from_failed_runs_are_removed(cfg):
     fake = FakePlatform()
     tools = json.loads((cfg.root / "agent" / "build" / "tools.json").read_text())
-    dup = next(t for t in tools if t["name"] == "get_balance")
+    dup = fill(next(t for t in tools if t["name"] == "get_balance"), BASE, "sec_1")
     fake.tools = {"tool_a": dup, "tool_b": dup}
     push(cfg, "outbound-demo", BASE, fake.client())
     assert "DELETE /v1/convai/tools/tool_b" in fake.calls
@@ -132,3 +133,16 @@ def test_dry_run_calls_nothing(cfg):
     out = json.loads(dry_run(cfg, "outbound-demo", BASE))
     assert out["tools"][0]["api_schema"]["url"].startswith(BASE + "/tools/")
     assert "{{" not in json.dumps(out)
+
+
+def test_other_projects_tools_with_the_same_names_are_never_touched(cfg):
+    """Two deployments in one workspace: same tool names, different endpoints."""
+    fake = FakePlatform()
+    tools = json.loads((cfg.root / "agent" / "build" / "tools.json").read_text())
+    other = {f"other_{t['name']}": fill(t, "https://other-project.example", "sec_x") for t in tools}
+    fake.tools = dict(other)
+    push(cfg, "outbound-demo", BASE, fake.client())
+    for tid, tool in other.items():
+        assert fake.tools[tid] == tool, f"{tid} was changed"
+    assert not [c for c in fake.calls if c.startswith("DELETE")]
+    assert len(fake.tools) == len(other) + 5  # ours created alongside
