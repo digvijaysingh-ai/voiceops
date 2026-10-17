@@ -61,7 +61,7 @@ handoff_tool = "transfer_to_human"
 outcome_tool = "log_outcome"
 ```
 
-`agent/build/safety.json` records, per profile, whether each slot was met by the kit default, a project fragment, or removed (with the reason). Domain rules that must be in every profile go in `[agent] required_fragments`.
+A slot can list alternatives, e.g. `ai_disclosure = ["10_disclosure", "10_disclosure_unrecorded"]` for profiles with and without recording; each profile must include at least one. `agent/build/safety.json` records, per profile, whether each slot was met by the kit default, a project fragment, or removed (with the reason). Domain rules that must be in every profile go in `[agent] required_fragments`.
 
 **First messages** are set per direction (`[agent.directions.outbound]`), with `phone_audio = true` for telephone codec in and out and `exclude_tools` for tools a direction must not have. A profile can override its direction's `first_message`, e.g. to drop the recording notice on a profile that doesn't record.
 

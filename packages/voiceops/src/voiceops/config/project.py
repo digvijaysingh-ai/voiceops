@@ -49,8 +49,9 @@ class AgentSection(_Strict):
     tool_timeout_secs: int = 10
     end_call_description: str = "End the call after logging the outcome and saying goodbye."
     directions: dict[str, Direction]
-    # Kit safety slot -> the project fragment that rewords it (see voiceops.config.safety).
-    safety: dict[str, str] = {}
+    # Kit safety slot -> the project fragment that rewords it, or a list of alternatives
+    # (each profile must include at least one). See voiceops.config.fragments.
+    safety: dict[str, str | list[str]] = {}
     # Kit safety slot -> reason for dropping it. Recorded in the build's safety.json.
     allow_remove: dict[str, str] = {}
     # Project fragments every profile must include (domain safety rules).

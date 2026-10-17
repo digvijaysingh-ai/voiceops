@@ -156,3 +156,25 @@ def test_cli_reports_config_errors(project):
     edit_config(project, 'llm = "test-llm"', "")
     result = CliRunner().invoke(app, ["build", "--config", str(project)])
     assert result.exit_code == 2 and "llm" in result.stderr
+
+
+def test_a_slot_can_be_met_by_one_of_several_fragments(project):
+    frag = project.parent / "agent" / "fragments"
+    (frag / "20_identity_short.md").write_text("# SAFETY: identity first\nVerify, then talk.\n")
+    edit_config(
+        project,
+        'identity_before_detail = "20_identity"',
+        'identity_before_detail = ["20_identity", "20_identity_short"]',
+    )
+    profiles = project.parent / "agent" / "profiles.json"
+    data = json.loads(profiles.read_text())
+    frags = data["inbound-private"]["fragments"]
+    frags[frags.index("20_identity")] = "20_identity_short"
+    profiles.write_text(json.dumps(data))
+    manifest = json.loads(built(project)["safety.json"])
+    assert manifest["outbound-demo"]["identity_before_detail"] == "project: 20_identity"
+    assert manifest["inbound-private"]["identity_before_detail"] == "project: 20_identity_short"
+    data["inbound-private"]["fragments"].remove("20_identity_short")
+    profiles.write_text(json.dumps(data))
+    with pytest.raises(ConfigError, match="none of"):
+        built(project)

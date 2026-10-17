@@ -71,13 +71,17 @@ def compose(
         if slot in agent.allow_remove:
             manifest[slot] = f"removed: {agent.allow_remove[slot]}"
         elif slot in agent.safety:
-            frag = agent.safety[slot]
-            if frag not in fragments:
+            # One fragment, or alternatives (e.g. a disclosure with and without a recording
+            # notice): the profile must include at least one of them.
+            options = agent.safety[slot]
+            options = [options] if isinstance(options, str) else options
+            present = [f for f in options if f in fragments]
+            if not present:
                 raise ConfigError(
-                    f"profile {key} drops safety slot {slot!r}: its fragment {frag!r} is not"
-                    " in the profile (add it, or [agent.allow_remove] with a reason)"
+                    f"profile {key} drops safety slot {slot!r}: none of {options} is in the"
+                    " profile (add one, or [agent.allow_remove] with a reason)"
                 )
-            manifest[slot] = f"project: {frag}"
+            manifest[slot] = "project: " + ", ".join(present)
         else:
             parts.append(_fill(slot, kit_fragment(slot), values))
             manifest[slot] = "kit default"
