@@ -6,10 +6,13 @@ sections read here are errors, so a typo can't silently fall back to a default.
 
 from __future__ import annotations
 
+import os
 import tomllib
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, ValidationError
+
+from voiceops.deploy.spec import Check, SessionSpec
 
 CONFIG_FILE = "voiceops.toml"
 
@@ -84,6 +87,28 @@ class EvalsSection(_Strict):
     results: Path = Path("evals/results")
 
 
+class DeploySection(_Strict):
+    base_url: str  # or "env:NAME"
+    timeout_s: float = 30
+    checks: list[Check]
+
+
+class ReviewSection(_Strict):
+    allowlist_env: str = "DEMO_PHONE_ALLOWLIST"  # exactly one E.164 number may be dialled
+    profile: str  # the built profile whose pushed agent places test calls
+    api_url: str  # the project's API, or "env:NAME"
+    session: SessionSpec  # opens the call's session; the agent gets its token
+    instructions: str | None = None  # "package.module:ATTR" -> str printed before a call
+    recordings: Path = Path("recordings")  # raw conversations and audio (keep gitignored)
+    sheets: Path = Path("review")  # rendered review sheets
+    disclosure_markers: list[str] = ["ai assistant", "artificial intelligence"]
+    verify_tool: str = "verify_identity"
+    verified_status: str = "verified"
+    leak_context: str = "subject"
+    # Phrases that promise something no tool does (e.g. "by email"): flagged for review.
+    unbacked_promises: list[str] = []
+
+
 class VoiceopsConfig(BaseModel):
     model_config = ConfigDict(extra="ignore")  # sections for other modules ([ledger], ...)
 
@@ -92,10 +117,31 @@ class VoiceopsConfig(BaseModel):
     guard: GuardSection = GuardSection()
     push: PushSection | None = None
     evals: EvalsSection | None = None
+    deploy: DeploySection | None = None
+    review: ReviewSection | None = None
     root: Path = Path(".")
 
     def path(self, p: Path) -> Path:
         return p if p.is_absolute() else self.root / p
+
+
+def resolve_env(value: str) -> str:
+    """ "env:NAME" -> the environment variable (must be set); anything else as is."""
+    if isinstance(value, str) and value.startswith("env:"):
+        name = value[4:]
+        v = os.environ.get(name, "").strip()
+        if not v:
+            raise ConfigError(f"{name} is not set (see .env.example)")
+        return v
+    return value
+
+
+def resolve_env_tree(obj):
+    if isinstance(obj, dict):
+        return {k: resolve_env_tree(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [resolve_env_tree(v) for v in obj]
+    return resolve_env(obj)
 
 
 def load_config(path: str | Path = CONFIG_FILE) -> VoiceopsConfig:
