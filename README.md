@@ -24,17 +24,14 @@ uv run voiceops gate      # PASS from scratch
 
 How each part works and how to configure it: [`docs/guide.md`](docs/guide.md). A generated project, as `init` writes it: [`examples/case-line`](examples/case-line).
 
-## How it's tested
+## Results
 
-The kit tests itself the way it tests agents:
+Measured against the plan's success criteria ([`docs/RESULTS.md`](docs/RESULTS.md)):
 
-- Ported Slotback's own test suites and checks against the original on real Slotback data: the ledger verifier gives the same result per check on 403 mutated copies of Slotback's signed evidence bundle; agent configs rebuild byte-identical; Slotback's 117 tests pass with its guard code replaced; its 12 tool-level scenarios give identical reports through the kit gate; its recorded ElevenLabs Tests results score identically through the kit adapter.
-- The leak detector's known-answer rule is enforced in the gate itself.
-- `voiceops init` output passes its own gate, tests and lint in the kit's CI, from scratch.
-
-## Status
-
-Built: every module above. Next: Slotback migrated onto the kit, then a second deployment started with `voiceops init`, timed. Plan and success criteria: [`docs/PLAN.md`](docs/PLAN.md); decisions: [`docs/DECISIONS.md`](docs/DECISIONS.md).
+- **Parity:** Slotback runs on the kit. The ledger verifier gives the same result per check on 403 mutated copies of Slotback's signed evidence bundle; its agent configs rebuild byte-identical; its tests, its 12 tool-level eval scenarios and its live deploy checks all pass, with identical eval reports.
+- **Thin use cases:** a second deployment (an insurer's claims line) started with `voiceops init` is 302 lines of domain Python on 2,841 lines of kit, with no kit code copied.
+- **Independent verification:** `pip install voiceledger` is 4 packages and 12 MB, with no web framework or database driver.
+- **Self-tested:** known-answer sets for the ledger and the leak detector, and `init` output that must pass its own gate, tests and lint.
 
 ## Develop
 
