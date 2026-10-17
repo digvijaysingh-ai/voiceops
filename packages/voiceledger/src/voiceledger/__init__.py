@@ -22,7 +22,7 @@ from voiceledger.rules import (
 from voiceledger.sign import SignedHead, SigningKeyMissing, sign_head
 from voiceledger.verify import verify
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = [
     "GENESIS",
     "AlwaysFollowedBy",

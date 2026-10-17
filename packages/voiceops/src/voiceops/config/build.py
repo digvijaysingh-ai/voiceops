@@ -71,9 +71,24 @@ def agent_config(key: str, p: dict, cfg: VoiceopsConfig, tools: Tools) -> tuple[
     return config, safety
 
 
+# Platform constraint (ElevenLabs, 2026-10-17): agents whose language is English must use an
+# English TTS model; the multilingual v2.5 models are refused at push time.
+ENGLISH_TTS_MODELS = frozenset({"eleven_turbo_v2", "eleven_flash_v2"})
+
+
+def check_platform_constraints(cfg: VoiceopsConfig) -> None:
+    a = cfg.agent
+    if a.language == "en" and a.tts_model not in ENGLISH_TTS_MODELS:
+        raise ConfigError(
+            f'[agent] language = "en" needs tts_model in {sorted(ENGLISH_TTS_MODELS)}'
+            f" (got {a.tts_model!r}); the platform refuses other models for English agents"
+        )
+
+
 def build(cfg: VoiceopsConfig) -> dict[str, str]:
     """Returns {filename: text} for the build directory. Raises ConfigError."""
     check_safety_config(cfg.agent)
+    check_platform_constraints(cfg)
     tools = load_tools(cfg.agent.tools, cfg.root)
     for direction, d in cfg.agent.directions.items():
         unknown = sorted(set(d.exclude_tools) - set(tools))

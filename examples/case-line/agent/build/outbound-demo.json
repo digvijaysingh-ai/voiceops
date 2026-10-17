@@ -30,7 +30,7 @@
     },
     "tts": {
       "agent_output_audio_format": "ulaw_8000",
-      "model_id": "eleven_flash_v2_5",
+      "model_id": "eleven_flash_v2",
       "voice_id": "REPLACE_WITH_A_VOICE_ID"
     }
   },

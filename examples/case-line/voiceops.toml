@@ -13,7 +13,9 @@ tools = "app.models:TOOLS"
 language = "en"
 llm = "claude-haiku-4-5"
 temperature = 0.2
-voice_id = "REPLACE_WITH_A_VOICE_ID"
+voice_id = "REPLACE_WITH_A_VOICE_ID"   # `voiceops push` refuses until this is a real voice
+# English agents need an English TTS model (eleven_flash_v2 or eleven_turbo_v2).
+tts_model = "eleven_flash_v2"
 # Domain safety rules every profile must include, on top of the kit's safety slots.
 required_fragments = ["40_no_decisions"]
 

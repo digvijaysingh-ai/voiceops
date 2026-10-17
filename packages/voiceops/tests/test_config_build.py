@@ -178,3 +178,9 @@ def test_a_slot_can_be_met_by_one_of_several_fragments(project):
     profiles.write_text(json.dumps(data))
     with pytest.raises(ConfigError, match="none of"):
         built(project)
+
+
+def test_english_agent_needs_an_english_tts_model(project):
+    edit_config(project, 'tts_model = "eleven_flash_v2"', 'tts_model = "eleven_flash_v2_5"')
+    with pytest.raises(ConfigError, match="needs tts_model"):
+        built(project)

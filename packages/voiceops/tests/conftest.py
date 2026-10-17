@@ -48,6 +48,7 @@ tools = "northwind_tools:TOOLS"
 language = "en"
 llm = "test-llm"
 voice_id = "voice-123"
+tts_model = "eleven_flash_v2"
 required_fragments = ["40_no_debt_advice"]
 
 [agent.safety]

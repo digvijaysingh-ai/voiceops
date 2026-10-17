@@ -76,6 +76,8 @@ def push(
     key, tool_secret = os.environ.get(pc.api_key_env), os.environ.get(pc.tool_secret_env)
     if not key or not tool_secret:
         raise ConfigError(f"{pc.api_key_env} and {pc.tool_secret_env} must be set")
+    if not cfg.agent.voice_id or cfg.agent.voice_id.startswith("REPLACE"):
+        raise ConfigError("set [agent] voice_id to a real voice before pushing")
     tools, agent = load_payloads(cfg, profile)
     state_file = cfg.path(pc.state)
     state = (

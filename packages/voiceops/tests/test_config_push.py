@@ -146,3 +146,9 @@ def test_other_projects_tools_with_the_same_names_are_never_touched(cfg):
         assert fake.tools[tid] == tool, f"{tid} was changed"
     assert not [c for c in fake.calls if c.startswith("DELETE")]
     assert len(fake.tools) == len(other) + 5  # ours created alongside
+
+
+def test_placeholder_voice_refuses_to_push(cfg):
+    cfg.agent.voice_id = "REPLACE_WITH_A_VOICE_ID"
+    with pytest.raises(ConfigError, match="voice_id"):
+        push(cfg, "outbound-demo", BASE, FakePlatform().client())
