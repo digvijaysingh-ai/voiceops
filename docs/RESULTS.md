@@ -4,10 +4,10 @@ The success criteria from [`PLAN.md`](PLAN.md) §1, measured. Every number is ME
 
 | # | Criterion | Result | Status |
 |---|---|---|---|
-| S1 | Slotback runs on the kit with no behaviour change | Same ledger results, byte-identical agent configs, same eval reports, all tests and live deploy checks pass | **Met** (on Slotback's `voiceops-migration` branch; merges after publish) |
-| S2 | `voiceops init` → live agent passing its gate in ≤ 3 working days | 3 min 10 s to deploy-ready; live steps pending | **Partly shown** |
+| S1 | Slotback runs on the kit with no behaviour change | Same ledger results, byte-identical agent configs, same eval reports, all tests and live deploy checks pass | **Met** (merged; Slotback's CI green on GitHub; live API redeployed, 6/6 deploy checks PASS) |
+| S2 | `voiceops init` → live agent passing its gate in ≤ 3 working days | Live and pushed at 1 h 07 min; conversation gate PASS at 1 h 17 min (fourth run); real call pending | **Met to the gate**; the reviewed real call is the last step |
 | S3 | The second deployment is mostly domain code, no copied kit code | 302 domain lines on 2,841 kit lines; 0 copied | **Met** |
-| S4 | The kit tests itself the way it tests agents | 152 tests; known-answer sets for the ledger and the leak detector; `init` output gated in CI | **Met** (locally; GitHub CI runs after publish) |
+| S4 | The kit tests itself the way it tests agents | 156 tests; known-answer sets for the ledger and the leak detector; `init` output gated in CI | **Met** (GitHub CI green) |
 | S5 | An auditor verifies a ledger with one small install | 4 packages, 12 MB, no web framework or database driver | **Met** |
 
 ## S1 · Parity with Slotback
@@ -26,7 +26,7 @@ Each module was compared with Slotback's original on Slotback's own code and dat
 | Deploy checks | `voiceops check` against Slotback's live API, from the migration branch | 6/6 PASS (tool p95 90 ms, client-side) |
 | Review | Call 02's raw conversation through `voiceops fetch`/`review` | The automatic checks flag the invented email confirmation that the manual review found |
 
-After the migration, Slotback's CI steps all pass on the branch: lint, format, `voiceops build --check`, metrics check, 103 tests (the 15 ledger tests now run in the kit), and the tool-level gate. Two intended changes, each in its own commit: unauthenticated requests get 401 before any body validation, and the production-reference profiles (which don't record) no longer say "this call is recorded".
+After the migration, Slotback's CI steps all pass, locally and on GitHub: lint, format, `voiceops build --check`, metrics check, 103 tests (the 15 ledger tests now run in the kit), and the tool-level gate. Two intended changes, each in its own commit: unauthenticated requests get 401 before any body validation, and the production-reference profiles (which don't record) no longer say "this call is recorded".
 
 ## S2 · Speed
 
@@ -37,9 +37,21 @@ The second deployment, `claims-surge` (a fictional insurer's claims line after a
 | `voiceops init claims-surge` | 0 |
 | Claims domain in; first passing tool-level gate (8/8, leak detector 9/9); tests and lint green | 2 min 22 s |
 | Deploy-ready: API runs; deploy checks 4/4 PASS locally; push dry-run builds 7 tools and the agent | 3 min 10 s |
-| Agent pushed, conversation gate PASS, first real call reviewed | pending: public deploy, platform credits and a call to the owner's phone |
+| API live on Render, deploy checks 4/4 PASS live, agents pushed | 1 h 06 min 55 s |
+| Conversation gate PASS: 11/11 (8 tool-level, 3 simulated conversations), on the fourth run | 1 h 17 min 17 s |
+| First real call reviewed | pending: a call to the owner's phone |
 
-These times come from a single focused build session; the three-working-day target is about a full deployment including the live steps, which remain to be timed.
+These times come from a single focused build session. The conversation runs cost 6,108 credits in four runs (MEASURED); each failing run found something real or tightened a check, and the time log in the `claims-surge` repository lists every finding and its fix.
+
+## What the second deployment changed in the kit
+
+Running a second, different deployment through the kit found what Slotback alone couldn't. Each became a release:
+
+| Release | Found by | Change |
+|---|---|---|
+| 0.1.1 | Pushing a second project into the same ElevenLabs workspace | `push` adopted tools by name, so it would have repointed or deleted Slotback's live tools. It now touches only tools calling its own endpoint (checked against the real workspace: Slotback's 13 tools unchanged) |
+| 0.1.2 | The platform refusing the first English agent | The build fails when an English agent uses a non-English TTS model; `push` refuses a placeholder voice |
+| 0.1.3 | The first conversation run | `forbidden_phrases` check on every agent turn (the agent said "I'm connecting you" and the platform's judge passed it); the handoff default says it's a call back; the template matches dates and references as callers say them |
 
 ## S3 · Thin use cases
 
@@ -57,7 +69,7 @@ It uses three of the four generic ledger rules, two of which Slotback never need
 
 ## S4 · The kit tests itself
 
-- 152 tests, Postgres tests on a real server.
+- 156 tests, Postgres tests on a real server; CI green on GitHub.
 - Known-answer sets: the signed showcase bundle and its tamper case for the ledger; planted-leak sets for the leak detector (Slotback 16/16, claims-surge 9/9, the `init` template 4/4); the gate refuses to report leak counts when its detector misses one.
 - `voiceops init` output passes its own gate, tests and lint inside the kit's test suite, and the committed example is checked against a fresh `init`.
 - The built wheels, installed in a clean environment, run `init`, `gate`, `build --check` and the generated tests.

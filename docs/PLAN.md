@@ -2,7 +2,7 @@
 
 **One line:** the deployment discipline from Slotback, packaged so the next voice-agent deployment starts with a release gate, an audit ledger and safe defaults on day one, instead of rebuilding them.
 
-**Status:** built and measured ([`RESULTS.md`](RESULTS.md)): S1, S3, S4, S5 met; S2 shown up to deploy-ready. Remaining steps need the owner: publish, deploy and push the second deployment, its conversation gate, one real call.
+**Status:** published on GitHub (v0.1.3) and measured ([`RESULTS.md`](RESULTS.md)): S1, S3, S4, S5 met; S2 met to the conversation gate. Open: one reviewed real call for the second deployment, and the PyPI release.
 
 ---
 
