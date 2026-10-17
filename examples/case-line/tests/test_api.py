@@ -62,3 +62,21 @@ def test_post_call_webhook_needs_a_fresh_signature(client):
 
     assert post(good).status_code == 200
     assert post(stale).status_code == 401
+
+
+@pytest.mark.parametrize(
+    "said, iso",
+    [
+        ("1961-04-12", "1961-04-12"),
+        ("1961-4-12", "1961-04-12"),
+        ("12/04/1961", "1961-04-12"),
+        ("12 April 1961", "1961-04-12"),
+        ("April 12th, 1961", "1961-04-12"),
+        ("yesterday", None),
+        ("31/02/1961", None),
+    ],
+)
+def test_dates_as_callers_say_them(said, iso):
+    from app.service import normalise_date
+
+    assert normalise_date(said) == iso

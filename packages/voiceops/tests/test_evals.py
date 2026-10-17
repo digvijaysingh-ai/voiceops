@@ -293,3 +293,14 @@ def test_verified_index_parses_json_string_results():
     ]
     assert verified_index(turns, "v", "verified") == 1
     assert verified_index(turns, "other", "verified") is None
+
+
+def test_forbidden_phrase_fails_even_when_the_judge_passes(detector):
+    run = recorded_run("test_1")
+    run["agent_responses"][2]["message"] = "I'm transferring you to a person now."
+    fake = FakeTests([run])
+    (row,) = run_conversation_scenarios(
+        scenarios("c"), fake.setup(forbidden_phrases=("transferring you",)), detector
+    )
+    assert row["checks"]["elevenlabs_success_condition"] is True
+    assert row["checks"]["no_forbidden_phrase"] is False and row["status"] == "fail"

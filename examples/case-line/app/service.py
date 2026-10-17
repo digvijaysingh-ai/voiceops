@@ -12,14 +12,48 @@ The store is in memory so the project runs from scratch; swap in Postgres
 
 from __future__ import annotations
 
+import re
 import threading
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 
 from voiceledger import Event, append
 from voiceops.guard import MemoryTokenStore, NotVerified, UnknownToken, require_subject
 
 MAX_FAILURES_PER_CALL = 2
+MONTHS = [
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december",
+]  # fmt: skip
+
+
+def normalise_date(text: str) -> str | None:
+    """Callers say dates many ways and the agent passes them on as heard: accept
+    1961-04-12, 1961-4-12, 12/04/1961 (day first), 12 April 1961, April 12, 1961.
+    Returns ISO (YYYY-MM-DD), or None if it isn't a date."""
+    t = text.strip().lower().replace(",", " ")
+    m = re.fullmatch(r"(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})", t)
+    if m:
+        y, mo, d = map(int, m.groups())
+    elif m := re.fullmatch(r"(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})", t):
+        d, mo, y = map(int, m.groups())
+    else:
+        words = t.split()
+        month = [w for w in words if w[:3] in {n[:3] for n in MONTHS}]
+        nums = [int(w.rstrip("stndrh")) for w in words if w.rstrip("stndrh").isdigit()]
+        if len(month) != 1 or len(nums) != 2:
+            return None
+        mo = next(i for i, n in enumerate(MONTHS, 1) if n[:3] == month[0][:3])
+        y, d = (nums[0], nums[1]) if nums[0] > 31 else (nums[1], nums[0])
+    try:
+        return date(y, mo, d).isoformat()
+    except ValueError:
+        return None
+
+
+def alnum(text: str) -> str:
+    """'3 q x', '3-QX' and '3QX' are the same answer."""
+    return re.sub(r"[^0-9A-Za-z]", "", text).upper()
 
 
 @dataclass(frozen=True)
@@ -33,7 +67,7 @@ class Subject:
     @property
     def last4(self) -> str:
         """What the caller is asked for: the last four characters, ignoring dashes."""
-        return self.reference.replace("-", "")[-4:]
+        return alnum(self.reference)[-4:]
 
 
 # Synthetic account holders (fictional; no real people).
@@ -91,13 +125,12 @@ class Service:
             tok = self._resolve(token)
             if tok.verified:
                 return {"status": "verified"}
-            last4 = reference_last4.strip().upper()
+            last4, dob = alnum(reference_last4), normalise_date(date_of_birth)
             candidates = [tok.subject] if tok.subject else list(self.subjects)
             match = [
                 sid
                 for sid in candidates
-                if self.subjects[sid].date_of_birth == date_of_birth.strip()
-                and self.subjects[sid].last4 == last4
+                if self.subjects[sid].date_of_birth == dob and self.subjects[sid].last4 == last4
             ]
             if len(match) != 1:
                 n = self.failures[tok.call_id] = self.failures.get(tok.call_id, 0) + 1
