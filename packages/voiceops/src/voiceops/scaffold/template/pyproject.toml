@@ -3,7 +3,7 @@ name = "__PROJECT__"
 version = "0.1.0"
 description = "Voice agent for __ORGANISATION__, built on voiceops."
 requires-python = ">=3.12"
-dependencies = ["voiceops[fastapi]", "uvicorn>=0.30"]
+dependencies = ["voiceops[fastapi]", "voiceledger", "uvicorn>=0.30"]
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6"]
