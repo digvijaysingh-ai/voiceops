@@ -28,7 +28,7 @@ uv run uvicorn app.api:app --port 8000
 
 ## Ship it
 
-1. Deploy the API, then `uv run voiceops check` (deploy checks against the live URL).
+1. Deploy the API (the `Dockerfile` runs on any Docker host; set the variables from `.env.example` there), then `uv run voiceops check` against the live URL.
 2. `uv run voiceops push --profile inbound-demo --base-url <API_URL>`.
 3. Add the conversation scenarios (`evals/scenarios.py`) and `[evals] conversation`; run `uv run voiceops gate`. ERRORED is not a pass.
 4. `uv run voiceops call` (rings only the one allow-listed number), then `uv run voiceops fetch <conversation_id>` and fill in the findings table of the review sheet.

@@ -1,0 +1,7 @@
+.env
+.venv/
+.git/
+recordings/
+review/
+evals/results/
+__pycache__/
