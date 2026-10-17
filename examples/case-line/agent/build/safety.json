@@ -1,0 +1,29 @@
+{
+  "inbound-demo": {
+    "ai_disclosure": "kit default",
+    "closing": "kit default",
+    "human_on_request": "kit default",
+    "identity_before_detail": "kit default",
+    "no_unbacked_promises": "kit default",
+    "third_party_voicemail": "kit default",
+    "upset_caller": "kit default"
+  },
+  "inbound-production-reference": {
+    "ai_disclosure": "kit default",
+    "closing": "kit default",
+    "human_on_request": "kit default",
+    "identity_before_detail": "kit default",
+    "no_unbacked_promises": "kit default",
+    "third_party_voicemail": "kit default",
+    "upset_caller": "kit default"
+  },
+  "outbound-demo": {
+    "ai_disclosure": "kit default",
+    "closing": "kit default",
+    "human_on_request": "kit default",
+    "identity_before_detail": "kit default",
+    "no_unbacked_promises": "kit default",
+    "third_party_voicemail": "kit default",
+    "upset_caller": "kit default"
+  }
+}

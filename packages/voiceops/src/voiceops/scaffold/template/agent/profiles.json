@@ -1,0 +1,25 @@
+{
+  "_comment": "demo: recording on, used only with the allow-listed phone and the browser widget. production-reference: zero retention, no recording.",
+  "outbound-demo": {
+    "name": "__PROJECT__ · outbound · demo",
+    "direction": "outbound",
+    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "record_voice": true,
+    "zero_retention_mode": false
+  },
+  "inbound-demo": {
+    "name": "__PROJECT__ · inbound · demo",
+    "direction": "inbound",
+    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "record_voice": true,
+    "zero_retention_mode": false
+  },
+  "inbound-production-reference": {
+    "name": "__PROJECT__ · inbound · production reference",
+    "direction": "inbound",
+    "first_message": "Hello, you're through to __ORGANISATION__'s AI assistant. How can I help?",
+    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "record_voice": false,
+    "zero_retention_mode": true
+  }
+}

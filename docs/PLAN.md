@@ -2,7 +2,7 @@
 
 **One line:** the deployment discipline from Slotback, packaged so the next voice-agent deployment starts with a release gate, an audit ledger and safe defaults on day one, instead of rebuilding them.
 
-**Status:** days 2–6 done: `voiceledger`, `voiceops.config`, `voiceops.guard`, `voiceops.evals`, `voiceops.deploy`, `voiceops.review`. Next: `voiceops init`, docs and the example project.
+**Status:** days 1–7 done: every kit module, `voiceops init`, the guide and the example project. Next: migrate Slotback onto the kit (S1).
 
 ---
 

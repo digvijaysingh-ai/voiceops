@@ -1,0 +1,25 @@
+{
+  "_comment": "demo: recording on, used only with the allow-listed phone and the browser widget. production-reference: zero retention, no recording.",
+  "outbound-demo": {
+    "name": "case-line · outbound · demo",
+    "direction": "outbound",
+    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "record_voice": true,
+    "zero_retention_mode": false
+  },
+  "inbound-demo": {
+    "name": "case-line · inbound · demo",
+    "direction": "inbound",
+    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "record_voice": true,
+    "zero_retention_mode": false
+  },
+  "inbound-production-reference": {
+    "name": "case-line · inbound · production reference",
+    "direction": "inbound",
+    "first_message": "Hello, you're through to Northwind Energy's AI assistant. How can I help?",
+    "fragments": ["00_role", "40_no_decisions", "50_case"],
+    "record_voice": false,
+    "zero_retention_mode": true
+  }
+}

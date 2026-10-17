@@ -145,3 +145,42 @@ class PgTokenStore:
             ),
             (now, call_id),
         )
+
+
+class MemoryTokenStore:
+    """In-process token store with PgTokenStore's interface (`conn` is accepted and ignored).
+
+    For tests, templates and single-process demos; tokens vanish on restart."""
+
+    def __init__(self):
+        self._by_token: dict[str, dict] = {}
+        self._by_call: dict[str, dict] = {}
+
+    def issue(self, conn, now: datetime, subject: str | None = None) -> tuple[str, str]:
+        call_id, token = new_call_id(), new_token()
+        row = {
+            "call_id": call_id,
+            "token": token,
+            "subject": subject,
+            "verified": False,
+            "started_at": now,
+            "ended_at": None,
+        }
+        self._by_token[token] = self._by_call[call_id] = row
+        return call_id, token
+
+    def resolve(self, conn, token: str) -> CallToken:
+        row = self._by_token.get(token)
+        if row is None or row["ended_at"] is not None:
+            raise UnknownToken("unknown or finished call")
+        return CallToken(row["call_id"], row["subject"], row["verified"])
+
+    def bind(self, conn, call_id: str, subject: str) -> None:
+        row = self._by_call.get(call_id)
+        if row is None or row["subject"] not in (None, subject):
+            raise BindRefused(f"call {call_id} is bound to another subject or does not exist")
+        row["subject"], row["verified"] = subject, True
+
+    def end(self, conn, call_id: str, now: datetime) -> None:
+        if call_id in self._by_call:
+            self._by_call[call_id]["ended_at"] = now

@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 
 import pytest
-from conftest import edit_config
 from typer.testing import CliRunner
 
+from conftest import edit_config
 from voiceops.cli import app
 from voiceops.config import SAFETY_SLOTS, ConfigError, build, kit_fragment, load_config
 

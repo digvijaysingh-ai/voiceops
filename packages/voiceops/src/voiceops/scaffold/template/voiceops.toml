@@ -1,0 +1,95 @@
+# __PROJECT__: the project's contract. Every voiceops command reads this file.
+# Reference: voiceops docs/guide.md
+
+[project]
+name = "__PROJECT__"
+locales = ["en"]
+
+[agent]
+fragments = "agent/fragments"
+profiles = "agent/profiles.json"
+build_dir = "agent/build"
+tools = "app.models:TOOLS"
+language = "en"
+llm = "claude-haiku-4-5"
+temperature = 0.2
+voice_id = "REPLACE_WITH_A_VOICE_ID"
+# Domain safety rules every profile must include, on top of the kit's safety slots.
+required_fragments = ["40_no_decisions"]
+
+# Values for the kit's default safety fragments (reword any slot via [agent.safety]).
+[agent.vars]
+organisation = "__ORGANISATION__"
+callback = "call __ORGANISATION__ on the number in your letter"
+identity_tool = "verify_identity"
+handoff_tool = "transfer_to_human"
+outcome_tool = "log_outcome"
+
+[agent.directions.outbound]
+first_message = "Hello, this is __ORGANISATION__'s AI assistant, and this call is recorded. Am I speaking with the account holder?"
+phone_audio = true
+
+[agent.directions.inbound]
+first_message = "Hello, you're through to __ORGANISATION__'s AI assistant, and this call is recorded. How can I help?"
+
+[guard]
+secret_header = "X-Tool-Secret"
+token_header = "X-Call-Token"
+
+[push]
+secret_name = "__PROJECT_ID___tool_secret"
+
+[ledger]
+# The verifier proves these on every ledger (voiceledger verify --rules voiceops.toml).
+[[ledger.rules]]
+rule = "requires_before"
+name = "identity_before_detail"
+effect = "detail_disclosed"
+precondition = "identity_verified"
+scope = ["call_id"]
+
+[[ledger.rules]]
+rule = "never"
+name = "agent_makes_no_decisions"
+event = "decision_made"
+where = { actor = "agent" }
+
+[evals]
+scenarios = "evals.scenarios:SCENARIOS"
+tool_runner = "evals.runner:tool_runner"
+# conversation = "evals.runner:conversation"   # enable once the agent is pushed
+leak_vocabulary = "evals/leak_vocabulary.toml"
+known_answers = "evals/known_answer"
+results = "evals/results"
+
+[deploy]
+base_url = "env:API_URL"
+
+[[deploy.checks]]
+check = "health"
+expect = { ok = true }
+
+[[deploy.checks]]
+check = "unsigned_refused"
+tool = "get_case"
+
+[[deploy.checks]]
+check = "signed_roundtrip"
+tool = "get_case"
+session = { path = "/api/sessions", body = { access_code = "env:DEMO_ACCESS_CODE" } }
+expect = { error = "identity_not_verified" }  # an unbound token must not get detail
+
+[[deploy.checks]]
+check = "p95"
+budget_ms = 300
+
+[review]
+profile = "outbound-demo"
+api_url = "env:API_URL"
+session = { path = "/api/sessions", body = { access_code = "env:DEMO_ACCESS_CODE", purpose = "outbound" } }
+instructions = "evals.runner:call_instructions"
+recordings = "recordings"
+sheets = "review"
+disclosure_markers = ["ai assistant"]
+leak_context = "subject"
+unbacked_promises = ["by email", "text message", "in the post", "by letter"]

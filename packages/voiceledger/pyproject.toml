@@ -2,6 +2,7 @@
 name = "voiceledger"
 version = "0.1.0.dev0"
 description = "Hash-chained, signed event ledger with pluggable rules and a standalone verifier."
+readme = "README.md"
 requires-python = ">=3.12"
 dependencies = ["cryptography>=42"]
 

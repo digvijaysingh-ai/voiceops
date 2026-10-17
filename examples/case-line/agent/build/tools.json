@@ -1,0 +1,156 @@
+[
+  {
+    "api_schema": {
+      "method": "POST",
+      "request_body_schema": {
+        "description": "Record that you said you are an AI and the call is recorded.",
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "request_headers": {
+        "X-Call-Token": {
+          "variable_name": "secret__call_token"
+        },
+        "X-Tool-Secret": {
+          "secret_id": "{{TOOL_SECRET_ID}}"
+        }
+      },
+      "url": "{{TOOL_BASE_URL}}/tools/record_disclosure"
+    },
+    "description": "Record that you said you are an AI and the call is recorded.",
+    "name": "record_disclosure",
+    "response_timeout_secs": 10,
+    "type": "webhook"
+  },
+  {
+    "api_schema": {
+      "method": "POST",
+      "request_body_schema": {
+        "description": "Check the caller is the account holder.",
+        "properties": {
+          "date_of_birth": {
+            "description": "Caller's date of birth, YYYY-MM-DD",
+            "type": "string"
+          },
+          "reference_last4": {
+            "description": "Last four characters of the caller's reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "date_of_birth",
+          "reference_last4"
+        ],
+        "type": "object"
+      },
+      "request_headers": {
+        "X-Call-Token": {
+          "variable_name": "secret__call_token"
+        },
+        "X-Tool-Secret": {
+          "secret_id": "{{TOOL_SECRET_ID}}"
+        }
+      },
+      "url": "{{TOOL_BASE_URL}}/tools/verify_identity"
+    },
+    "description": "Check the caller is the account holder.",
+    "name": "verify_identity",
+    "response_timeout_secs": 10,
+    "type": "webhook"
+  },
+  {
+    "api_schema": {
+      "method": "POST",
+      "request_body_schema": {
+        "description": "Read the verified caller's case status and next step.",
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "request_headers": {
+        "X-Call-Token": {
+          "variable_name": "secret__call_token"
+        },
+        "X-Tool-Secret": {
+          "secret_id": "{{TOOL_SECRET_ID}}"
+        }
+      },
+      "url": "{{TOOL_BASE_URL}}/tools/get_case"
+    },
+    "description": "Read the verified caller's case status and next step.",
+    "name": "get_case",
+    "response_timeout_secs": 10,
+    "type": "webhook"
+  },
+  {
+    "api_schema": {
+      "method": "POST",
+      "request_body_schema": {
+        "description": "Ask a person to call the caller back.",
+        "properties": {
+          "reason": {
+            "description": "Why the caller wants a person, in a few words",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "type": "object"
+      },
+      "request_headers": {
+        "X-Call-Token": {
+          "variable_name": "secret__call_token"
+        },
+        "X-Tool-Secret": {
+          "secret_id": "{{TOOL_SECRET_ID}}"
+        }
+      },
+      "url": "{{TOOL_BASE_URL}}/tools/transfer_to_human"
+    },
+    "description": "Ask a person to call the caller back.",
+    "name": "transfer_to_human",
+    "response_timeout_secs": 10,
+    "type": "webhook"
+  },
+  {
+    "api_schema": {
+      "method": "POST",
+      "request_body_schema": {
+        "description": "Record how the call ended. Call before saying goodbye.",
+        "properties": {
+          "outcome": {
+            "description": "How the call ended",
+            "enum": [
+              "status_given",
+              "handoff",
+              "identity_failed",
+              "voicemail",
+              "third_party",
+              "wrong_number"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "type": "object"
+      },
+      "request_headers": {
+        "X-Call-Token": {
+          "variable_name": "secret__call_token"
+        },
+        "X-Tool-Secret": {
+          "secret_id": "{{TOOL_SECRET_ID}}"
+        }
+      },
+      "url": "{{TOOL_BASE_URL}}/tools/log_outcome"
+    },
+    "description": "Record how the call ended. Call before saying goodbye.",
+    "name": "log_outcome",
+    "response_timeout_secs": 10,
+    "type": "webhook"
+  }
+]

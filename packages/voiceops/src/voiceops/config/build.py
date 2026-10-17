@@ -34,7 +34,9 @@ def agent_config(key: str, p: dict, cfg: VoiceopsConfig, tools: Tools) -> tuple[
         "name": p["name"],
         "conversation_config": {
             "agent": {
-                "first_message": direction.first_message,
+                # A profile can override its direction's first message (e.g. no recording
+                # notice on a profile that doesn't record).
+                "first_message": p.get("first_message", direction.first_message),
                 "language": a.language,
                 "prompt": {
                     "llm": a.llm,

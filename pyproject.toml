@@ -20,6 +20,8 @@ dev = ["pytest>=8", "ruff>=0.6", "hypothesis>=6", "psycopg[binary]>=3.2", "pgser
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# The init template is linted as a generated project (tests/test_scaffold.py).
+extend-exclude = ["packages/voiceops/src/voiceops/scaffold/template"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

@@ -7,6 +7,7 @@ from voiceops.guard.secrets import new_secret, secret_matches, sign_webhook, ver
 from voiceops.guard.tokens import (
     BindRefused,
     CallToken,
+    MemoryTokenStore,
     NotVerified,
     PgTokenStore,
     TokenError,
@@ -20,6 +21,7 @@ __all__ = [
     "SAFE_FIELDS",
     "BindRefused",
     "CallToken",
+    "MemoryTokenStore",
     "NotVerified",
     "PgTokenStore",
     "RateLimiter",

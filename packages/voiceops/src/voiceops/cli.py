@@ -13,6 +13,8 @@ from voiceops.config import push as push_profile
 
 app = typer.Typer(help="Deployment discipline for voice agents.", no_args_is_help=True)
 CONFIG = typer.Option(Path("voiceops.toml"), "--config", "-c", help="Project config file.")
+DIRECTORY = typer.Option(None, help="Where to create it (default: ./<name>).")
+KIT_SOURCE = typer.Option(None, help="Use a local kit checkout (its packages/ folder), not PyPI.")
 
 
 @app.callback()
@@ -24,6 +26,26 @@ def main() -> None:
 def version() -> None:
     """Print the kit version."""
     typer.echo(__version__)
+
+
+@app.command()
+def init(
+    name: str = typer.Argument(..., help="Project name: lowercase, digits, dashes."),
+    organisation: str = typer.Option("Example Organisation", help="Who the agent speaks for."),
+    directory: Path = DIRECTORY,
+    kit_source: Path = KIT_SOURCE,
+) -> None:
+    """Create a new use-case project with the kit wired in."""
+    from voiceops.scaffold import init as scaffold
+
+    target = directory or Path(name)
+    try:
+        written = scaffold(target, name, organisation, kit_source)
+    except ConfigError as e:
+        typer.echo(f"error: {e}", err=True)
+        raise typer.Exit(2) from e
+    typer.echo(f"created {target} ({len(written)} files)")
+    typer.echo(f"next: cd {target} && uv sync && uv run voiceops gate")
 
 
 @app.command()
