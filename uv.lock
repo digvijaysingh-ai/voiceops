@@ -879,6 +879,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "fastapi" },
     { name = "hypothesis" },
     { name = "pgserver" },
     { name = "psycopg", extra = ["binary"] },
@@ -894,6 +895,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "fastapi", specifier = ">=0.110" },
     { name = "hypothesis", specifier = ">=6" },
     { name = "pgserver", specifier = ">=0.1.4" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },

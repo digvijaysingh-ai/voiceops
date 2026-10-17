@@ -15,7 +15,7 @@ voiceops = { workspace = true }
 voiceledger = { workspace = true }
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6", "hypothesis>=6", "psycopg[binary]>=3.2", "pgserver>=0.1.4"]
+dev = ["pytest>=8", "ruff>=0.6", "hypothesis>=6", "psycopg[binary]>=3.2", "pgserver>=0.1.4", "fastapi>=0.110"]
 
 [tool.ruff]
 line-length = 100

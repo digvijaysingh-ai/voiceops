@@ -1,4 +1,4 @@
-"""Real Postgres for the storage tests.
+"""Real Postgres for the storage tests (shared by both packages).
 
 Set TEST_DATABASE_URL to use an existing server. Otherwise an embedded server is
 started via `pgserver` (pip-installed Postgres binaries, no Docker needed); without

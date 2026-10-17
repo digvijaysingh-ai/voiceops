@@ -2,7 +2,7 @@
 
 **One line:** the deployment discipline from Slotback, packaged so the next voice-agent deployment starts with a release gate, an audit ledger and safe defaults on day one, instead of rebuilding them.
 
-**Status:** days 2–3 done: `voiceledger` (pluggable rules) and `voiceops.config` (build, safety defaults, drift check, push). Next: `voiceops.guard`.
+**Status:** days 2–4 done: `voiceledger` (pluggable rules), `voiceops.config` (build, safety defaults, drift check, push), `voiceops.guard` (tool secret, call tokens, webhook HMAC, rate limits, safe logs). Next: `voiceops.evals`.
 
 ---
 
