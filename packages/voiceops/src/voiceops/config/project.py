@@ -70,6 +70,20 @@ class PushSection(_Strict):
     tool_secret_env: str = "TOOL_SECRET"
 
 
+class EvalsSection(_Strict):
+    scenarios: str  # "package.module:ATTR", a list of voiceops.evals.Scenario
+    # "package.module:ATTR", a context manager factory: run_id -> run(scenario_id) -> checks
+    tool_runner: str | None = None
+    # "package.module:ATTR", a factory: config -> voiceops.evals.ConversationSetup
+    conversation: str | None = None
+    leak_vocabulary: Path = Path("evals/leak_vocabulary.toml")
+    known_answers: Path = Path("evals/known_answer")
+    max_false_alarms: int = 2
+    # Scenario checks that, when False, count as a privacy leak in the report.
+    leak_checks: list[str] = ["nothing_disclosed", "no_privacy_leak"]
+    results: Path = Path("evals/results")
+
+
 class VoiceopsConfig(BaseModel):
     model_config = ConfigDict(extra="ignore")  # sections for other modules ([ledger], ...)
 
@@ -77,6 +91,7 @@ class VoiceopsConfig(BaseModel):
     agent: AgentSection
     guard: GuardSection = GuardSection()
     push: PushSection | None = None
+    evals: EvalsSection | None = None
     root: Path = Path(".")
 
     def path(self, p: Path) -> Path:

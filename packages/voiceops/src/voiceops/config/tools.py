@@ -7,32 +7,22 @@ Deployment-specific values stay as placeholders filled at push time:
 
 from __future__ import annotations
 
-import importlib
-import sys
 from pathlib import Path
 from typing import get_args
 
 from pydantic import BaseModel
 
+from voiceops._imports import ImportSpecError, load_object
 from voiceops.config.project import ConfigError, VoiceopsConfig
 
 Tools = dict[str, tuple[type[BaseModel], str]]
 
 
 def load_tools(spec: str, root: Path) -> Tools:
-    module_name, _, attr = spec.partition(":")
-    if not attr:
-        raise ConfigError(f"[agent] tools must look like 'package.module:ATTR', got {spec!r}")
-    added = str(root) not in sys.path
-    if added:
-        sys.path.insert(0, str(root))
     try:
-        return getattr(importlib.import_module(module_name), attr)
-    except (ImportError, AttributeError) as e:
-        raise ConfigError(f"cannot load tools from {spec!r}: {e}") from e
-    finally:
-        if added:
-            sys.path.remove(str(root))
+        return load_object(spec, root, "[agent] tools")
+    except ImportSpecError as e:
+        raise ConfigError(str(e)) from e
 
 
 def _property(schema: dict) -> dict:

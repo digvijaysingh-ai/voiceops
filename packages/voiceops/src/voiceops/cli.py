@@ -69,5 +69,33 @@ def push(
         raise typer.Exit(2) from e
 
 
+@app.command()
+def gate(
+    level: str = typer.Option("all", help="tool | conversation | all"),
+    only: str = typer.Option("", help="Comma-separated scenario ids (writes partial.json)."),
+    smoke: bool = typer.Option(False, help="Only scenarios marked smoke."),
+    config: Path = CONFIG,
+) -> None:
+    """Run the release gate. Exit 0 = PASS, 1 = FAIL, 2 = ERRORED."""
+    from voiceops.evals import EXIT, gate_from_config, iter_failures
+
+    if level not in ("tool", "conversation", "all"):
+        typer.echo("error: --level must be tool, conversation or all", err=True)
+        raise typer.Exit(2)
+    try:
+        cfg = load_config(config)
+        load_dotenv(cfg.root / ".env")
+        report, out = gate_from_config(cfg, level, [s for s in only.split(",") if s], smoke)
+    except (ConfigError, ValueError) as e:
+        typer.echo(f"error: {e}", err=True)
+        raise typer.Exit(2) from e
+    status = report["gate"]["status"]
+    typer.echo(f"gate {status}: {report['gate']['summary']}")
+    for line in iter_failures(report):
+        typer.echo(f"  {line}")
+    typer.echo(f"report: {out}")
+    raise typer.Exit(EXIT[status])
+
+
 if __name__ == "__main__":
     app()
