@@ -4,6 +4,7 @@ and the ElevenLabs Tests adapter (PLAN §2, §4.3)."""
 from voiceops.evals.elevenlabs import (
     ConversationSetup,
     ConversationUnavailable,
+    forbidden_said,
     run_conversation_scenarios,
     verified_index,
 )
@@ -21,6 +22,7 @@ __all__ = [
     "LeakDetector",
     "Scenario",
     "check",
+    "forbidden_said",
     "gate_from_config",
     "iter_failures",
     "load_cases",

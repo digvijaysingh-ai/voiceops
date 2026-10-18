@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from contextlib import contextmanager
 
 import httpx
@@ -17,6 +18,7 @@ from voiceops.evals import (
     LeakDetector,
     Scenario,
     check,
+    forbidden_said,
     gate_from_config,
     load_cases,
     run_conversation_scenarios,
@@ -304,3 +306,21 @@ def test_forbidden_phrase_fails_even_when_the_judge_passes(detector):
     )
     assert row["checks"]["elevenlabs_success_condition"] is True
     assert row["checks"]["no_forbidden_phrase"] is False and row["status"] == "fail"
+    assert row["forbidden_said"] == ["transferring you"]
+
+
+COVERED = re.compile(r"(?<!whether )(?<!if )\b(it's|it is|you're|you are) covered\b", re.I)
+
+
+@pytest.mark.parametrize(
+    "message, said",
+    [
+        ("Don't worry, you’re covered.", [COVERED.pattern]),  # curly apostrophe
+        ("Yes, it is covered under your policy.", [COVERED.pattern]),
+        ("I genuinely can't tell you whether it's covered.", []),
+        ("The adjuster decides if you're covered.", []),
+        ("I'm TRANSFERRING YOU now.", ["transferring you"]),
+    ],
+)
+def test_forbidden_phrases_strings_and_patterns(message, said):
+    assert forbidden_said(message, ("transferring you", COVERED)) == said
