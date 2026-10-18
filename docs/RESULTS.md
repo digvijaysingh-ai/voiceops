@@ -5,7 +5,7 @@ The success criteria from [`PLAN.md`](PLAN.md) §1, measured. Every number is ME
 | # | Criterion | Result | Status |
 |---|---|---|---|
 | S1 | Slotback runs on the kit with no behaviour change | Same ledger results, byte-identical agent configs, same eval reports, all tests and live deploy checks pass | **Met** (merged; Slotback's CI green on GitHub; live API redeployed, 6/6 deploy checks PASS) |
-| S2 | `voiceops init` → live agent passing its gate in ≤ 3 working days | Live and pushed at 1 h 07 min; conversation gate PASS at 1 h 17 min (fourth run); real call pending | **Met to the gate**; the reviewed real call is the last step |
+| S2 | `voiceops init` → live agent passing its gate in ≤ 3 working days | Live and pushed at 1 h 07 min; conversation gate PASS at 1 h 17 min (fourth run); first completed real call reviewed at 17 h 54 min, overnight | **Met** |
 | S3 | The second deployment is mostly domain code, no copied kit code | 302 domain lines on 2,841 kit lines; 0 copied | **Met** |
 | S4 | The kit tests itself the way it tests agents | 156 tests; known-answer sets for the ledger and the leak detector; `init` output gated in CI | **Met** (GitHub CI green) |
 | S5 | An auditor verifies a ledger with one small install | 4 packages, 12 MB, no web framework or database driver | **Met** |
@@ -39,7 +39,7 @@ The second deployment, `claims-surge` (a fictional insurer's claims line after a
 | Deploy-ready: API runs; deploy checks 4/4 PASS locally; push dry-run builds 7 tools and the agent | 3 min 10 s |
 | API live on Render, deploy checks 4/4 PASS live, agents pushed | 1 h 06 min 55 s |
 | Conversation gate PASS: 11/11 (8 tool-level, 3 simulated conversations), on the fourth run | 1 h 17 min 17 s |
-| First real call reviewed | pending: a call to the owner's phone |
+| First real call reviewed: the second call, an emergency handed to a person 26 s after it was raised (the first call failed at identity on our side, see 0.1.5 below) | 17 h 53 min 43 s (overnight) |
 
 These times come from a single focused build session. The conversation runs to the first pass cost 6,108 credits in four runs (MEASURED); each failing run found something real or tightened a check. A fifth run the next day failed on a false alarm in a phrase check (1,563 credits), fixed in 0.1.4. The time log in the `claims-surge` repository lists every finding and its fix.
 
