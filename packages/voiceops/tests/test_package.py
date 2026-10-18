@@ -6,6 +6,6 @@ from voiceops.cli import app
 
 
 def test_packages_import_and_cli_runs():
-    assert voiceops.__version__ == voiceledger.__version__ == "0.1.6"
+    assert voiceops.__version__ == voiceledger.__version__ == "0.1.7"
     result = CliRunner().invoke(app, ["version"])
-    assert result.exit_code == 0 and result.stdout.strip() == "0.1.6"
+    assert result.exit_code == 0 and result.stdout.strip() == "0.1.7"

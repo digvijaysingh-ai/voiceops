@@ -55,6 +55,7 @@ Running a second, different deployment through the kit found what Slotback alone
 | 0.1.4 | A later conversation run | A correct refusal ("I can't tell you whether it's covered") failed the gate on a substring match. A forbidden phrase can now be a pattern that skips refusals, and the gate and the project's tests share one matcher |
 | 0.1.5 | The first real call | The API restarted mid-call and refused the call's token; the agent told a caller with the right details that they didn't match, and the review sheet showed 0 tool errors. The identity default now says a tool error is a technical problem, and the sheet counts error replies |
 | 0.1.6 | The second real call | The caller's spoken callback number appeared in full on the review sheet; the agent's improvised example date was repeated back as an answer. The sheet masks every phone-like number; the identity default forbids example answers |
+| 0.1.7 | | Same code as 0.1.6; replaces its source package |
 
 ## S3 · Thin use cases
 
