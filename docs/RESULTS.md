@@ -53,6 +53,7 @@ Running a second, different deployment through the kit found what Slotback alone
 | 0.1.2 | The platform refusing the first English agent | The build fails when an English agent uses a non-English TTS model; `push` refuses a placeholder voice |
 | 0.1.3 | The first conversation run | `forbidden_phrases` check on every agent turn (the agent said "I'm connecting you" and the platform's judge passed it); the handoff default says it's a call back; the template matches dates and references as callers say them |
 | 0.1.4 | A later conversation run | A correct refusal ("I can't tell you whether it's covered") failed the gate on a substring match. A forbidden phrase can now be a pattern that skips refusals, and the gate and the project's tests share one matcher |
+| 0.1.5 | The first real call | The API restarted mid-call and refused the call's token; the agent told a caller with the right details that they didn't match, and the review sheet showed 0 tool errors. The identity default now says a tool error is a technical problem, and the sheet counts error replies |
 
 ## S3 · Thin use cases
 

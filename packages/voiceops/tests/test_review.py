@@ -221,3 +221,16 @@ def test_fetch_saves_raw_and_audio_and_cli_renders(cfg, project):
 def test_fetch_refuses_odd_conversation_ids(cfg):
     with pytest.raises(ConfigError, match="bad conversation id"):
         fetch_conversation(cfg, "../../etc/passwd", client=mock(lambda r: None))
+
+
+def test_an_error_body_counts_as_a_tool_error_even_unflagged(opts):
+    # A guarded API refuses with a normal response; the platform doesn't mark it is_error.
+    # The first real claims-surge call: an unknown call token, read out as "details don't match".
+    conv = conversation()
+    refused = result("verify_account", {"ok": False, "error": "unauthorized"})
+    mismatch = result("verify_account", {"status": "failed", "attempts_left": 1})
+    conv["transcript"][1]["tool_results"] = [refused, mismatch]
+    rows, flags = checks(conv, opts)
+    assert rows["Tool errors"] == "2"  # the refusal and log_outcome's flagged error
+    assert any('error: "unauthorized"' in f.what for f in flags)
+    assert not any("attempts_left" in f.what for f in flags)

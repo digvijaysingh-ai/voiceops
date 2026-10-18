@@ -52,6 +52,18 @@ def _result_text(res: dict) -> str:
     return raw
 
 
+def _is_error(res: dict) -> bool:
+    """The platform's flag, or a tool that answered with an error body (`{"error": ...}`):
+    a guarded API refuses with a normal response, so the platform never marks it."""
+    if res.get("is_error"):
+        return True
+    try:
+        body = json.loads(res.get("result_value") or "")
+    except (TypeError, json.JSONDecodeError):
+        return False
+    return isinstance(body, dict) and bool(body.get("error"))
+
+
 def _turns(conv: dict) -> list[dict]:
     return [{**t, "message": t.get("message") or ""} for t in conv.get("transcript") or []]
 
@@ -94,10 +106,7 @@ def automatic_checks(
         flags += [Flag(f.turn, f"Possible leak: {f.reason}") for f in leaks]
 
     errors = [
-        (i, r)
-        for i, t in enumerate(turns)
-        for r in t.get("tool_results") or []
-        if r.get("is_error")
+        (i, r) for i, t in enumerate(turns) for r in t.get("tool_results") or [] if _is_error(r)
     ]
     rows.append(
         (
@@ -181,7 +190,7 @@ def render(conv: dict, opts: SheetOptions, title: str | None = None) -> str:
             params = "" if params.strip() in ("{}", "") else f" {_cell(params, 160)}"
             out.append(f"| {i} | {ts} | tool | → `{c.get('tool_name')}`{params} |")
         for r in t.get("tool_results") or []:
-            mark = " ⚠ error" if r.get("is_error") else ""
+            mark = " ⚠ error" if _is_error(r) else ""
             out.append(
                 f"| {i} | {ts} | tool | ← `{r.get('tool_name')}`{mark}: "
                 f"{_cell(_result_text(r), 200)} |"
