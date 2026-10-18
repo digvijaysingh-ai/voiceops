@@ -816,7 +816,7 @@ wheels = [
 
 [[package]]
 name = "voiceledger"
-version = "0.1.7"
+version = "0.1.8"
 source = { editable = "packages/voiceledger" }
 dependencies = [
     { name = "cryptography" },
@@ -836,7 +836,7 @@ provides-extras = ["postgres"]
 
 [[package]]
 name = "voiceops"
-version = "0.1.7"
+version = "0.1.8"
 source = { editable = "packages/voiceops" }
 dependencies = [
     { name = "httpx" },

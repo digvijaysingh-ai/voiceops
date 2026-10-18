@@ -30,6 +30,7 @@ Measured against the plan's success criteria ([`docs/RESULTS.md`](docs/RESULTS.m
 
 - **Parity:** Slotback runs on the kit. The ledger verifier gives the same result per check on 403 mutated copies of Slotback's signed evidence bundle; its agent configs rebuild byte-identical; its tests, its 12 tool-level eval scenarios and its live deploy checks all pass, with identical eval reports.
 - **Second deployment:** [claims-surge](https://github.com/digvijaysingh-ai/claims-surge), an insurer's claims line started with `voiceops init`, was live with its conversation gate passing 1 h 17 min after `init`; it's 302 lines of domain Python on 2,841 lines of kit, with no kit code copied.
+- **Field findings:** the second deployment's simulated conversations and three real calls produced six kit releases (0.1.1 to 0.1.6), each with a test; what each one found is in [`docs/RESULTS.md`](docs/RESULTS.md).
 - **Independent verification:** `pip install voiceledger` is 4 packages and 12 MB, with no web framework or database driver.
 - **Self-tested:** known-answer sets for the ledger and the leak detector, and `init` output that must pass its own gate, tests and lint.
 
