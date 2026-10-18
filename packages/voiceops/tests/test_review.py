@@ -19,6 +19,7 @@ from voiceops.review import (
     place_call,
     render,
 )
+from voiceops.review.sheet import _cell
 
 REVIEW = """
 [review]
@@ -234,3 +235,20 @@ def test_an_error_body_counts_as_a_tool_error_even_unflagged(opts):
     assert rows["Tool errors"] == "2"  # the refusal and log_outcome's flagged error
     assert any('error: "unauthorized"' in f.what for f in flags)
     assert not any("attempts_left" in f.what for f in flags)
+
+
+@pytest.mark.parametrize(
+    "said, kept, gone",
+    [
+        ("This is the same number, 07700 900 461.", "…461", "0900"),
+        ("Call me on +44 7700 900123 please", "…123", "7700"),
+        ('{"callback_number": "07700-900-123"}', "…123", "900-"),
+        ("Your reference is CLM-2026-0502, born 1958-07-21.", "CLM-2026-0502", None),
+        ("It happened on 2026-03-01 10 am", "2026-03-01 10 am", None),
+    ],
+)
+def test_numbers_said_on_the_call_are_masked(said, kept, gone):
+    # The second real claims-surge call: the caller said their callback number in full.
+    cell = _cell(said)
+    assert kept in cell
+    assert gone is None or gone not in cell

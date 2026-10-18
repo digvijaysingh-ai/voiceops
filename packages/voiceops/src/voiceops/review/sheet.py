@@ -8,6 +8,7 @@ Phone numbers never reach the sheet: only the last three digits are shown.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
@@ -31,8 +32,23 @@ class Flag:
     what: str
 
 
+# Nine or more digits, however spaced or punctuated: a phone number said during the call or
+# passed to a tool. Dates and short references (CLM-2026-0502) have fewer, or are dates.
+PHONE_LIKE = re.compile(r"\+?\d(?:[\s\-.()]*\d){8,}")
+ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def _mask_numbers(text: str) -> str:
+    def mask(m: re.Match) -> str:
+        if ISO_DATE.search(m.group()):
+            return m.group()
+        return "…" + re.sub(r"\D", "", m.group())[-3:]
+
+    return PHONE_LIKE.sub(mask, text)
+
+
 def _cell(text: str, limit: int = 400) -> str:
-    text = " ".join(str(text).split())
+    text = _mask_numbers(" ".join(str(text).split()))
     text = text if len(text) <= limit else text[: limit - 1] + "…"
     return text.replace("|", "\\|")
 
