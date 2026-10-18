@@ -41,7 +41,7 @@ The second deployment, `claims-surge` (a fictional insurer's claims line after a
 | Conversation gate PASS: 11/11 (8 tool-level, 3 simulated conversations), on the fourth run | 1 h 17 min 17 s |
 | First real call reviewed | pending: a call to the owner's phone |
 
-These times come from a single focused build session. The conversation runs cost 6,108 credits in four runs (MEASURED); each failing run found something real or tightened a check, and the time log in the `claims-surge` repository lists every finding and its fix.
+These times come from a single focused build session. The conversation runs to the first pass cost 6,108 credits in four runs (MEASURED); each failing run found something real or tightened a check. A fifth run the next day failed on a false alarm in a phrase check (1,563 credits), fixed in 0.1.4. The time log in the `claims-surge` repository lists every finding and its fix.
 
 ## What the second deployment changed in the kit
 
@@ -52,6 +52,7 @@ Running a second, different deployment through the kit found what Slotback alone
 | 0.1.1 | Pushing a second project into the same ElevenLabs workspace | `push` adopted tools by name, so it would have repointed or deleted Slotback's live tools. It now touches only tools calling its own endpoint (checked against the real workspace: Slotback's 13 tools unchanged) |
 | 0.1.2 | The platform refusing the first English agent | The build fails when an English agent uses a non-English TTS model; `push` refuses a placeholder voice |
 | 0.1.3 | The first conversation run | `forbidden_phrases` check on every agent turn (the agent said "I'm connecting you" and the platform's judge passed it); the handoff default says it's a call back; the template matches dates and references as callers say them |
+| 0.1.4 | A later conversation run | A correct refusal ("I can't tell you whether it's covered") failed the gate on a substring match. A forbidden phrase can now be a pattern that skips refusals, and the gate and the project's tests share one matcher |
 
 ## S3 · Thin use cases
 
